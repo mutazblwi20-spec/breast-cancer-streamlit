@@ -1,16 +1,16 @@
 import streamlit as st
-import pickle
 import numpy as np
-
-# تحميل النموذج و scaler
-model, scaler = pickle.load(open("breast_cancer_model.pkl", "rb"))
+import joblib
 
 st.set_page_config(page_title="Breast Cancer Predictor", layout="centered")
+
+# تحميل النموذج و الـ scaler
+model = joblib.load("breast_cancer_model.pkl")
+scaler = joblib.load("scaler.pkl")
 
 st.title("🩺 Breast Cancer Prediction App")
 st.markdown("أدخل القيم التالية لتوقع نوع الورم")
 
-# إنشاء حقول إدخال ديناميكية
 feature_names = [
     "radius_mean", "texture_mean", "perimeter_mean", "area_mean", "smoothness_mean",
     "compactness_mean", "concavity_mean", "concave points_mean", "symmetry_mean", "fractal_dimension_mean"
@@ -19,9 +19,10 @@ feature_names = [
 inputs = []
 
 for feature in feature_names:
-    value = st.number_input(f"{feature}", value=0.0)
+    value = st.number_input(feature, value=0.0)
     inputs.append(value)
 
+# زر التنبؤ (خارج الحلقة)
 if st.button("Predict"):
     input_array = np.array(inputs).reshape(1, -1)
     input_scaled = scaler.transform(input_array)
